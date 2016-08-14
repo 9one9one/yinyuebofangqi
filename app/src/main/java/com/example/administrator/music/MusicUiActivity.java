@@ -38,6 +38,8 @@ public class MusicUiActivity extends AppCompatActivity
     public static LrcView lyric;
     private SeekBar seekbar;
     MusicUiActivityReceiver receiver;
+    private TextView timeStart;
+    private TextView timeEnd;
 
     private List<MusicInfo> musicInfoList;//音乐信息
     private Boolean playStatus;//音乐播放状态--方便控制UI
@@ -74,6 +76,7 @@ public class MusicUiActivity extends AppCompatActivity
         previous.setOnClickListener(this);
         play.setOnClickListener(this);
         next.setOnClickListener(this);
+        seekbar.setOnSeekBarChangeListener(new seekbarLinister());
         broadcastReceiver();
         Intent broadcast = new Intent("MUSICUI_MUSIC_UI");
         broadcast.putExtra("Type", "Lyric");
@@ -171,6 +174,8 @@ public class MusicUiActivity extends AppCompatActivity
         next=(ImageView)findViewById(R.id.next);
         lyric=(LrcView)findViewById(R.id.lyric);
         seekbar=(SeekBar)findViewById(R.id.seekbar);
+        timeStart=(TextView)findViewById(R.id.timeStart);
+        timeEnd=(TextView)findViewById(R.id.timeEnd);
     }
 
     /**
@@ -183,6 +188,9 @@ public class MusicUiActivity extends AppCompatActivity
         musicTitle.setText(intent.getStringExtra("Title"));
         playStatus=intent.getBooleanExtra("Status",false);
         currentPlay=intent.getIntExtra("CurrentPlay",-1);
+        int max= (int) musicInfoList.get(currentPlay).getDuration();
+        seekbar.setMax(max);
+        timeEnd.setText(becomeTime(max));
         if(playStatus){
             play.setImageResource(R.drawable.pasue_icon);
         }
@@ -190,6 +198,27 @@ public class MusicUiActivity extends AppCompatActivity
             play.setImageResource(R.drawable.play_iocn);
         }
 //        new mAsyncTask().execute(musicInfoList.get(currentPlay).getUrl());
+    }
+
+    /**
+     * 将时间转化为--:--型
+     * @param time
+     * @return
+     */
+    protected String becomeTime(int time){
+        StringBuffer becometime=new StringBuffer();
+        int million= (int) (time/1000);
+        int m=million/60;
+        int s=million%60;
+        if(m>=10)
+            becometime.append(m);
+        else
+            becometime.append("0"+m);
+        if(s>=10)
+            becometime.append(":"+s);
+        else
+            becometime.append(":0"+s);
+        return becometime.toString();
     }
 
     @Override
@@ -217,6 +246,9 @@ public class MusicUiActivity extends AppCompatActivity
             currentPlay++;
         }
         else {
+            int max=(int) musicInfoList.get(currentPlay).getDuration();
+            seekbar.setMax(max);
+            timeEnd.setText(becomeTime(max));
             Intent broadcast = new Intent("MUSICUI_CONTROL");
             broadcast.putExtra("Control", "Previous");
             sendBroadcast(broadcast);
@@ -252,12 +284,41 @@ public class MusicUiActivity extends AppCompatActivity
             currentPlay--;
         }
         else {
+            int max=(int) musicInfoList.get(currentPlay).getDuration();
+            seekbar.setMax(max);
+            timeEnd.setText(becomeTime(max));
             Intent broadcast = new Intent("MUSICUI_CONTROL");
             broadcast.putExtra("Control", "Next");
             sendBroadcast(broadcast);
             playStatus = true;
             play.setImageResource(R.drawable.pasue_icon);
             musicTitle.setText(musicInfoList.get(currentPlay).getTitle());
+        }
+    }
+
+    /**
+     * 用户改变进度
+     */
+    class seekbarLinister implements SeekBar.OnSeekBarChangeListener{
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            if(b){
+                Intent intent=new Intent("MUSICUI_MUSIC_UI");
+                intent.putExtra("Type","ChangeSeekbar");
+                intent.putExtra("SeekTime",i);
+                sendBroadcast(intent);
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
         }
     }
 
@@ -278,8 +339,14 @@ public class MusicUiActivity extends AppCompatActivity
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("Type").equals("UI"))
+            if(intent.getStringExtra("Type").equals("UI")) {
                 handler.sendEmptyMessage(0x123);
+            }
+            else if(intent.getStringExtra("Type").equals("Seekbar")){
+                int current=intent.getIntExtra("Time",-1);
+                seekbar.setProgress(current);
+                timeStart.setText(becomeTime(current));
+            }
         }
     }
 

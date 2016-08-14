@@ -21,6 +21,8 @@ import com.example.administrator.music.Utils.Media;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Administrator on 2016/8/7.
@@ -39,11 +41,11 @@ public class MusicService extends Service {
     private int index2=0;
     private int displayLyric=0;
 
-    public Handler handler=new Handler(){
+    private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
 
-            if(msg.what==0x123){
+            if(msg.what==0x129){
                 if(currentPath.equals("")){
                     currentPath=musicInfoList.get(0).getUrl();
                     initLrc();
@@ -52,6 +54,18 @@ public class MusicService extends Service {
                 else {
                     initLrc();
                 }
+            }
+        }
+    };
+    private Handler handler2=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what==99){
+                Intent bradcast=new Intent("UI_CHANGE");
+                bradcast.putExtra("Type","Seekbar");
+                bradcast.putExtra("Time",mediaPlayer.getCurrentPosition());
+                sendBroadcast(bradcast);
             }
         }
     };
@@ -166,6 +180,12 @@ public class MusicService extends Service {
      *初始化歌词
      */
     protected void initLrc(){
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler2.sendEmptyMessage(99);
+            }
+        },0,1000);
         lyrics=new GetLyric().getCurrentMusicLyric(currentPath);
         if(lyrics.size()==0)
             MusicUiActivity.lyric.setText("没有歌词");
@@ -252,9 +272,12 @@ public class MusicService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(intent.getStringExtra("Type").equals("ChangeSeekbar")){
+                mediaPlayer.seekTo(intent.getIntExtra("SeekTime",-1));
+            }
             if(intent.getStringExtra("Type").equals("Lyric")){
                 displayLyric=intent.getIntExtra("Display",-1);
-                handler.sendEmptyMessage(0x123);
+                handler.sendEmptyMessage(0x129);
             }
             else {
                 playWay = intent.getStringExtra("Type");
@@ -262,8 +285,4 @@ public class MusicService extends Service {
             }
         }
     }
-
-    /**
-     * 通过广播来接受已在歌词显示页，通过私有变量来判断，若歌词显示页销毁或没打开，设置该变量为不显示歌词
-     */
 }

@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     broadcastByMusicUi receiver1;
     MainActivityReceiver  receiver2;
 
-    public Handler handler=new Handler(){
+    private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             if(msg.what==0x123){
@@ -278,7 +278,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            handler.sendEmptyMessage(0x125);
+            if(intent.getStringExtra("Type").equals("UI"))
+                handler.sendEmptyMessage(0x125);
         }
     }
 }
