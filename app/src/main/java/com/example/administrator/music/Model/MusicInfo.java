@@ -3,6 +3,7 @@ package com.example.administrator.music.Model;
 /**
  * Created by Administrator on 2016/8/4.
  */
+//音乐信息
 public class MusicInfo {
     private long id;
     private String title;

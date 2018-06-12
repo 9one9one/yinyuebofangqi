@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
+//播放器操作
 /**
  * Created by Administrator on 2016/8/7.
  */
@@ -36,7 +36,7 @@ public class MusicService extends Service {
     private int currentTime;
     private int duration;
     private String playWay="";
-    private List<Lyric> lyrics=new ArrayList<Lyric>();
+    private List<Lyric> lyrics=new ArrayList<Lyric>();//歌词列表
     broadcastByActivity receiver;
     private int index2=0;
     private int displayLyric=0;
@@ -86,11 +86,11 @@ public class MusicService extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {//根据不同的播放方式进行操作
-                if(playWay.equals("OneLoop")){
+                if(playWay.equals("OneLoop")){//单曲循环
                     index2=0;
                     mediaPlayer.start();
                 }
-                else if(playWay.equals("ListLoop")){
+                else if(playWay.equals("ListLoop")){//列表循环
                     if(currentPlay+1<=musicInfoList.size()){
                         index2=0;
                         currentPlay++;
@@ -114,7 +114,7 @@ public class MusicService extends Service {
         index2=0;
         int status=intent.getIntExtra("Status",-1);
         if(status==0){
-            pasue();
+            pasue();//暂停
         }
         if(status==1) {
             String playPath = intent.getStringExtra("Uri");
@@ -140,7 +140,7 @@ public class MusicService extends Service {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy() {//销毁服务
         super.onDestroy();
         unregisterReceiver(receiver);
     }

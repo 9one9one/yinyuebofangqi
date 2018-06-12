@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Created by Administrator on 2016/8/5.
- */
+ *///音乐数据和播放器的桥梁
 public class MusicAdapter extends BaseAdapter {
 
     private Context context;

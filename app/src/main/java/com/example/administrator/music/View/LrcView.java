@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.example.administrator.music.Model.Lyric;
 
 import java.util.List;
-
+//歌词显示
 /**
  * Created by Administrator on 2016/8/11.
  */

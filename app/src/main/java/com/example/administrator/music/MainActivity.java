@@ -1,5 +1,5 @@
 package com.example.administrator.music;
-
+//主界面
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,10 +31,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private ListView listView;
-    private ImageView musicImg;
+    private ImageView musicImg;//音乐符
     private TextView musicTitle;
     private TextView musicArtist;
-    private ImageView previous;
+    private ImageView previous;//上一首
     private ImageView play;
     private ImageView next;
     private List<MusicInfo> musicList;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
-
+//创建主界面
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         service.putExtra("Status",3);
         startService(service);
     }
-
+//退出
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     /**
-     * 按钮点击事件
+     * 按钮点击
      * @param view
      */
     @Override
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * ListView的Item点击事件
+     * ListView的Item点击
      */
     class ItemClicked implements AdapterView.OnItemClickListener {
         @Override
